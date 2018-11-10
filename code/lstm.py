@@ -29,6 +29,7 @@ data_train = np.array(data_train)
 classes_train = np.array(classes_train)
 print(data_train.shape)
 print(classes_train.shape)
+print(len(data_train))
 
 
 np.random.seed(7)
@@ -37,5 +38,6 @@ model.add(LSTM(50,input_shape=(n,26)))
 model.add(Dense(25,activation='relu'))
 model.add(Dense(2, activation='sigmoid'))
 model.add(Dense(26, activation=lambda x: x))
-model.compile(loss='binary_crossentropy',optimizer ='RMSprop',metrics=['accuracy'])
-model.fit(data_train,classes_train,epochs=100, batch_size=1,validation_split=0.2,verbose=2);
+model.compile(loss='binary_crossentropy',optimizer ='adam',metrics=['accuracy'])
+model.fit(data_train,classes_train,epochs=2, batch_size=20,validation_split=0.2,verbose=1);
+# callbacks=[EarlyStopping(min_delta=0.00025, patience=2)] entra no model.fit
