@@ -11,8 +11,8 @@ with open("../data/macmorpho-train.txt","r") as f:
     for word in words_list: # get all different tokens in text
         class_aux = word.split("_")
         classes_set.add(class_aux[1])
-        classes.write(str(class_aux[1])+" ")
-        words.write(str(class_aux[0])+" ")
+        words.write(str(class_aux[1])+" ")
+        classes.write(str(class_aux[0])+" ")
 
 
 classes.close()

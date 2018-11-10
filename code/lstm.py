@@ -7,9 +7,9 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_extraction.text import CountVectorizer
 
-with open("words.txt","r") as classes:
+with open("classes.txt","r") as classes:
 	text = classes.read().split(' ')
-	
+
 n = 10
 data_train = []
 classes_train = []
@@ -30,12 +30,6 @@ classes_train = np.array(classes_train)
 print(data_train.shape)
 print(classes_train.shape)
 
-#classes_train = np.array(classes_t)
-#label_encoder = LabelEncoder()
-#integer_encoded = label_encoder.fit_transform(classes_train)
-#onehot_encoder = OneHotEncoder(sparse=False)
-#integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
-#class_train = onehot_encoder.fit_transform(integer_encoded)
 
 np.random.seed(7)
 model = Sequential()
@@ -44,7 +38,4 @@ model.add(Dense(25,activation='relu'))
 model.add(Dense(2, activation='sigmoid'))
 model.add(Dense(26, activation=lambda x: x))
 model.compile(loss='binary_crossentropy',optimizer ='RMSprop',metrics=['accuracy'])
-model.fit(data_train,classes_train,epochs=100, batch_size=len(data_train),validation_split=0.2,verbose=2);
-#scores = model.evaluate(data_test,classes_test,batch_size=len(data_test))
-#predict = model.predict(data_test,batch_size=len(data_test),verbose=0)
-#print('Accurracy: {}'.format(scores[1]))
+model.fit(data_train,classes_train,epochs=100, batch_size=1,validation_split=0.2,verbose=2);
