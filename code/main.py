@@ -112,5 +112,8 @@ def main(n,epochs,batch_size):
         score_list.append(score[1])
 
 
-for i in range(5,30,5):
-    main(i,15,20)
+#for i in range(5,30,5):
+ #   main(i,15,20)
+
+main(3,15,20)
+main(4,15,20)
