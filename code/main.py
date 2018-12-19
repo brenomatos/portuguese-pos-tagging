@@ -20,7 +20,7 @@ batch_size = 20
 def main(n,epochs,batch_size):
     with open("classes.txt","r") as classes:
         text = classes.read().split(' ')
-    # 
+    #
 
     data_train = []
     classes_train = []
@@ -29,7 +29,7 @@ def main(n,epochs,batch_size):
     corpus = corpus.toarray()
     with open("features_"+str(n)+'-'+str(epochs)+".txt","w") as f:
         f.write(str(vectorizer.get_feature_names()))
-    # 
+    #
     count1=0 #sliding window
     count2=n-1 #sliding window
     while(count2<len(corpus)-1):
@@ -37,14 +37,14 @@ def main(n,epochs,batch_size):
         data_train.append(corpus[count1:count2])
         classes_train.append(corpus[count2])
         count1 += 1
-    # 
+    #
     data_train = np.array(data_train)
     classes_train = np.array(classes_train)
     # print(data_train.shape)
     # print(classes_train.shape)
     # print(len(data_train))
-    # 
-    # 
+    #
+    #
     np.random.seed(7)
     model = Sequential()
     model.add(LSTM(50,input_shape=(n,26)))
@@ -99,7 +99,7 @@ def main(n,epochs,batch_size):
 
     with open("total_acuracy_"+str(n)+'-'+str(epochs)+".txt","w") as f:
         f.write(str(model.evaluate(data_test,classes_test,batch_size=batch_size,verbose=2)))
-        
+
     with open(str(n)+'-'+str(epochs)+".csv","w") as f:
             f.write("index,accuracy\n")
 
@@ -112,8 +112,8 @@ def main(n,epochs,batch_size):
         score_list.append(score[1])
 
 
-#for i in range(5,30,5):
- #   main(i,15,20)
+for i in range(5,30,5):
+   main(i,15,8192)
 
-main(3,15,20)
-main(4,15,20)
+# main(3,15,20)
+# main(4,15,20)
