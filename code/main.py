@@ -8,106 +8,134 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_extraction.text import CountVectorizer
 
 
-def getOneHot(test_corpus):
+def pre_processing(): #separates the words from its classes
+	classes_set = set() # this list will keep track of all classes of words
+	classes = open("words.txt","w")
+	words = open("classes.txt", "w")
+	with open("../data/macmorpho-train.txt","r") as f:
+	    text = f.read()
+	    words_list = text.split( )
+	    for word in words_list: # get all different tokens in text
+	        class_aux = word.split("_")
+	        classes_set.add(class_aux[1])
+	        words.write(str(class_aux[1])+" ")
+	        classes.write(str(class_aux[0])+" ")
+	classes.close()
+	words.close()
+	print("Pre-processing Done")
+
+
+def getOneHot(test_corpus): #returns one-hot index
 	for i in range(0,len(test_corpus)):
 		if(test_corpus[i]==1):
 			return i
 
 
-n = 10 # window size
-epochs = 1
-batch_size = 20
-def main(n,epochs,batch_size):
-    with open("classes.txt","r") as classes:
-        text = classes.read().split(' ')
+def return_training_data(text, window_size, epochs):
+	data_train = []
+	classes_train = []
+	vectorizer = CountVectorizer(lowercase=False, token_pattern='[A-Z;+;-]+')
+	corpus = vectorizer.fit_transform(text)
+	corpus = corpus.toarray()
+	with open("../results/features_"+str(window_size)+'-'+str(epochs)+".txt","w") as f:
+	    f.write(str(vectorizer.get_feature_names()))
 
-    data_train = []
-    classes_train = []
-    vectorizer = CountVectorizer(lowercase=False, token_pattern='[A-Z;+;-]+')
-    corpus = vectorizer.fit_transform(text)
-    corpus = corpus.toarray()
-    with open("features_"+str(n)+'-'+str(epochs)+".txt","w") as f:
-        f.write(str(vectorizer.get_feature_names()))
+	window_start=0 #sliding window
+	window_end=window_size-1 #sliding window
+	while(window_end<len(corpus)-1):
+	    window_end += 1
+	    data_train.append(corpus[window_start:window_end])
+	    classes_train.append(corpus[window_end])
+	    window_start += 1
 
-    count1=0 #sliding window
-    count2=n-1 #sliding window
-    while(count2<len(corpus)-1):
-        count2 += 1
-        data_train.append(corpus[count1:count2])
-        classes_train.append(corpus[count2])
-        count1 += 1
+	data_train = np.array(data_train)
+	classes_train = np.array(classes_train)
 
-    data_train = np.array(data_train)
-    classes_train = np.array(classes_train)
+	return data_train,classes_train,vectorizer,corpus
 
 
-    np.random.seed(7)
-    model = Sequential()
-    model.add(LSTM(50,input_shape=(n,26)))
-    model.add(Dense(25,activation='relu'))
-    model.add(Dense(2, activation='sigmoid'))
-    model.add(Dense(26, activation=lambda x: x))
-    model.compile(loss='binary_crossentropy',optimizer ='adam',metrics=['accuracy'])
-    model.fit(data_train,classes_train,epochs=epochs, batch_size=batch_size,validation_split=0.2,verbose=1);
+def return_testing_data(vectorizer, window_size, corpus, text):
+	data_test = []
+	classes_test = []
+
+	test_corpus = vectorizer.fit_transform(text)
+	test_corpus = test_corpus.toarray()
+
+	knownTestByClass = {}
+	predictedTestByClass = {}
+
+	window_start=0 #sliding window
+	window_end=window_size-1 #sliding window
+
+	while(window_end<len(test_corpus)-1):
+	    index = getOneHot(test_corpus[(window_end)])
+	    if index not in knownTestByClass:
+	        knownTestByClass[index] = []
+
+	    if index not in predictedTestByClass:
+	        predictedTestByClass[index] = []
+
+	    window_end += 1
+	    knownTestByClass[index].append(test_corpus[window_start:window_end])
+	    predictedTestByClass[index].append(test_corpus[window_end])
+
+	    data_test.append(corpus[window_start:window_end])
+	    classes_test.append(corpus[window_end])
+
+	    window_start += 1
+
+	for i in knownTestByClass:
+	    knownTestByClass[i] = np.array(knownTestByClass[i])
+	for i in predictedTestByClass:
+	    predictedTestByClass[i] = np.array(predictedTestByClass[i])
+
+	data_test = np.array(data_test)
+	classes_test = np.array(classes_test)
+
+	return data_test,classes_test,knownTestByClass,predictedTestByClass
+
+
+def main(window_size,epochs,batch_size):
+	with open("classes.txt","r") as classes:
+		text = classes.read().split(' ')
+	#generating training samples
+	data_train = []
+	classes_train = []
+	data_train,classes_train,vectorizer,corpus = return_training_data(text, window_size, epochs)
+
+	np.random.seed(7)
+	model = Sequential()
+	model.add(LSTM(50,input_shape=(window_size,26)))
+	model.add(Dense(25,activation='relu'))
+	model.add(Dense(2, activation='sigmoid'))
+	model.add(Dense(26, activation=lambda x: x))
+	model.compile(loss='binary_crossentropy',optimizer ='adam',metrics=['accuracy'])
+	model.fit(data_train,classes_train,epochs=epochs, batch_size=batch_size,validation_split=0.2,verbose=1);
 
     #generating test samples
-    data_test = []
-    classes_test = []
+	data_test = []
+	classes_test = []
+	data_test,classes_test,knownTestByClass,predictedTestByClass = return_testing_data(vectorizer, window_size, corpus, text)
 
-    with open("classes.txt","r") as test_classes:
-        test_text = test_classes.read().split(' ')
+	# printing model evaluation results to .csv files
+	with open("../results/total_acuracy_"+str(window_size)+'-'+str(epochs)+".txt","w") as f:
+		f.write(str(model.evaluate(data_test,classes_test,batch_size=batch_size,verbose=2)))
 
+	with open("../results/"+str(window_size)+'-'+str(epochs)+".csv","w") as f:
+		f.write("index,accuracy\n")
 
-    test_corpus = vectorizer.fit_transform(test_text)
-    test_corpus = test_corpus.toarray()
-
-    knownTestByClass = {}
-    predictedTestByClass = {}
-
-    count1=0 #sliding window
-    count2=n-1 #sliding window
-
-    while(count2<len(test_corpus)-1):
-        index = getOneHot(test_corpus[(count2)])
-        if index not in knownTestByClass:
-            knownTestByClass[index] = []
-
-        if index not in predictedTestByClass:
-            predictedTestByClass[index] = []
-
-        count2 += 1
-        knownTestByClass[index].append(test_corpus[count1:count2])
-        predictedTestByClass[index].append(test_corpus[count2])
-
-        data_test.append(corpus[count1:count2])
-        classes_test.append(corpus[count2])
-
-        count1 += 1
-
-    for i in knownTestByClass:
-        knownTestByClass[i] = np.array(knownTestByClass[i])
-    for i in predictedTestByClass:
-        predictedTestByClass[i] = np.array(predictedTestByClass[i])
-
-    data_test = np.array(data_test)
-    classes_test = np.array(classes_test)
-
-    with open("total_acuracy_"+str(n)+'-'+str(epochs)+".txt","w") as f:
-        f.write(str(model.evaluate(data_test,classes_test,batch_size=batch_size,verbose=2)))
-
-    with open(str(n)+'-'+str(epochs)+".csv","w") as f:
-            f.write("index,accuracy\n")
-
-    score_list = []
-    for index in knownTestByClass:
-        score = model.evaluate(knownTestByClass[index],predictedTestByClass[index],batch_size=batch_size,verbose=2)
-        with open(str(n)+'-'+str(epochs)+".csv","a") as f:
-            f.write(str(index)+","+str(score[1])+"\n")
-        score_list.append(score[1])
+	score_list = [] # stores each class's (by index) accuracy
+	for index in knownTestByClass:
+		score = model.evaluate(knownTestByClass[index],predictedTestByClass[index],batch_size=batch_size,verbose=2)
+		with open("../results/"+str(window_size)+'-'+str(epochs)+".csv","a") as f:
+			f.write(str(index)+","+str(score[1])+"\n")
+		score_list.append(score[1])
 
 
-for i in range(5,30,5):
-   main(i,15,8192)
+pre_processing()
 
-# main(3,15,20)
+# for i in range(5,30,5):
+#    main(i,15,8192)
+
+main(3,1,8192)
 # main(4,15,20)
