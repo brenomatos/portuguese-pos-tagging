@@ -1,7 +1,7 @@
-# Part-Of-Speech Tagger (Brazillian Portuguese)
+# Part-Of-Speech Tagger (Portuguese)
 
 Code regarding the second practical assignment from Natural Language Processing class @ UFMG.
-The assignment was to perform a POS-Tag task on a brazillian portuguese corpus.
+The assignment was to perform a POS-Tag task on a portuguese corpus.
 ## Files Needed
 
 In this assignment, I used the Mac-Morpho dataset. Mac-Morpho is a corpus of Brazilian Portuguese texts annotated with part-of-speech tags. It's files and manual (in portuguese) can be found [here](http://nilc.icmc.usp.br/macmorpho/).
