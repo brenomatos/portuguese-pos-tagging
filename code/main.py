@@ -37,8 +37,6 @@ def return_training_data(text, window_size, epochs):
 	vectorizer = CountVectorizer(lowercase=False, token_pattern='[A-Z;+;-]+')
 	corpus = vectorizer.fit_transform(text)
 	corpus = corpus.toarray()
-	with open("../results/features_"+str(window_size)+'-'+str(epochs)+".txt","w") as f:
-	    f.write(str(vectorizer.get_feature_names()))
 
 	window_start=0 #sliding window
 	window_end=window_size-1 #sliding window
@@ -103,6 +101,7 @@ def main(window_size,epochs,batch_size):
 	classes_train = []
 	data_train,classes_train,vectorizer,corpus = return_training_data(text, window_size, epochs)
 
+
 	np.random.seed(7)
 	model = Sequential()
 	model.add(LSTM(50,input_shape=(window_size,26)))
@@ -118,19 +117,17 @@ def main(window_size,epochs,batch_size):
 	data_test,classes_test,knownTestByClass,predictedTestByClass = return_testing_data(vectorizer, window_size, corpus, text)
 
 	# printing model evaluation results to .csv files
-	with open("../results/total_acuracy_"+str(window_size)+'-'+str(epochs)+".txt","w") as f:
-		f.write(str(model.evaluate(data_test,classes_test,batch_size=batch_size,verbose=2)))
+	with open("../results/total_accuracy_"+str(window_size)+'-'+str(epochs)+".txt","w") as f:
+		f.write(str(model.evaluate(data_test,classes_test,batch_size=batch_size,verbose=2)[1]))
 
 	with open("../results/"+str(window_size)+'-'+str(epochs)+".csv","w") as f:
 		f.write("index,accuracy\n")
 
-	score_list = [] # stores each class's (by index) accuracy
+	classes_list = vectorizer.get_feature_names() # will be used to return each class's accuracy, but without using an index
 	for index in knownTestByClass:
 		score = model.evaluate(knownTestByClass[index],predictedTestByClass[index],batch_size=batch_size,verbose=2)
 		with open("../results/"+str(window_size)+'-'+str(epochs)+".csv","a") as f:
-			f.write(str(index)+","+str(score[1])+"\n")
-		score_list.append(score[1])
-
+			f.write(str(classes_list[index])+","+str(score[1])+"\n")
 
 pre_processing()
 
