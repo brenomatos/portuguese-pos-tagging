@@ -1,4 +1,4 @@
-# Part-Of-Speech Tagger (Portuguese)
+# Part-Of-Speech Tagging (Portuguese)
 
 Code regarding the second practical assignment from Natural Language Processing class @ UFMG.
 The assignment was to perform a POS-Tag task on a portuguese corpus.
