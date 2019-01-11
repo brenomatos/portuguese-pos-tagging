@@ -30,7 +30,7 @@ with 'x' and 'y' having the same meaning as in the previous file.
 The first file contains the accuracy of the model regarding every grammatical class considered. The second file contains the accuracy of the model as a whole, considering total hits/misses.
 
 ### Graphs
-This code will also create graphs for each model created. The graph displays each class's accuracy like the example below:
+This code will also create graphs for each model created, stored in the 'results/graphs/' folder. The graph displays each class's accuracy like the example below:
 ![Example Graph](/results/graphs/accuracy_by_class_3-1.png "Example Graph")
 
 ## Built With
@@ -39,6 +39,9 @@ This code will also create graphs for each model created. The graph displays eac
 
 ## Contributing
 Pull requests are welcome!
+
+## Acknowledgments
+Some methods from 'graphs.py' were inspired by my friend and brazillian developer [Rafael](https://rafaatsouza.github.io/). Check his implementation for a portuguese POS-Tagger [here](https://github.com/rafaatsouza/nlp_tp2)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
