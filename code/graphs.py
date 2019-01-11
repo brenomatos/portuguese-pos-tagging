@@ -34,3 +34,6 @@ def graph_by_class(file_path,window_size,epochs):
     plt.savefig('../results/graphs/accuracy_by_class_'+str(window_size)+"-"+str(epochs)+'.png')
 
     del keys
+
+def graph_by_window_size():
+    quit()

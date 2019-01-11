@@ -7,6 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_extraction.text import CountVectorizer
 from graphs import graph_by_class
+import os
 
 def pre_processing(): #separates the words from its classes
 	classes_set = set() # this list will keep track of all classes of words
@@ -116,12 +117,18 @@ def main(window_size,epochs,batch_size):
 	classes_test = []
 	data_test,classes_test,knownTestByClass,predictedTestByClass = return_testing_data(vectorizer, window_size, corpus, text)
 
-	result_file_name = str(window_size)+'-'+str(epochs) # stores the LSTM's parameters as string
-												        # to use as file name
+	result_file_name = str(window_size)+'-'+str(epochs) # stores the LSTM's parameters as string to use as file name
 
-	# printing model evaluation results to .csv files
-	with open("../results/total_accuracy_"+result_file_name+".txt","w") as f:
-		f.write(str(model.evaluate(data_test,classes_test,batch_size=batch_size,verbose=2)[1]))
+	# check if the total_accuracy file exists
+	if os.path.exists("../results/total_accuracy.csv"):
+		header_exists = True
+	else:
+		header_exists = False
+	# if it does not exist, save the header
+	with open("../results/total_accuracy.csv", "a+") as f:
+		if not header_exists:
+			f.write("window_size,epochs,accuracy\n")
+		f.write(str(window_size)+","+str(epochs)+","+str(model.evaluate(data_test,classes_test,batch_size=batch_size,verbose=2)[1])+"\n")
 
 	with open("../results/"+result_file_name+".csv","w") as f:
 		f.write("index,accuracy\n")
@@ -137,5 +144,5 @@ def main(window_size,epochs,batch_size):
 
 pre_processing()
 
-main(3,2,8192)
-# main(4,15,20)
+main(3,1,8192)
+main(4,1,8192)
