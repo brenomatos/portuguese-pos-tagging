@@ -6,7 +6,7 @@ from keras.layers import LSTM
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_extraction.text import CountVectorizer
-
+from graphs import graph_by_class
 
 def pre_processing(): #separates the words from its classes
 	classes_set = set() # this list will keep track of all classes of words
@@ -116,23 +116,26 @@ def main(window_size,epochs,batch_size):
 	classes_test = []
 	data_test,classes_test,knownTestByClass,predictedTestByClass = return_testing_data(vectorizer, window_size, corpus, text)
 
+	result_file_name = str(window_size)+'-'+str(epochs) # stores the LSTM's parameters as string
+												        # to use as file name
+
 	# printing model evaluation results to .csv files
-	with open("../results/total_accuracy_"+str(window_size)+'-'+str(epochs)+".txt","w") as f:
+	with open("../results/total_accuracy_"+result_file_name+".txt","w") as f:
 		f.write(str(model.evaluate(data_test,classes_test,batch_size=batch_size,verbose=2)[1]))
 
-	with open("../results/"+str(window_size)+'-'+str(epochs)+".csv","w") as f:
+	with open("../results/"+result_file_name+".csv","w") as f:
 		f.write("index,accuracy\n")
 
 	classes_list = vectorizer.get_feature_names() # will be used to return each class's accuracy, but without using an index
 	for index in knownTestByClass:
 		score = model.evaluate(knownTestByClass[index],predictedTestByClass[index],batch_size=batch_size,verbose=2)
-		with open("../results/"+str(window_size)+'-'+str(epochs)+".csv","a") as f:
+		with open("../results/"+result_file_name+".csv","a") as f:
 			f.write(str(classes_list[index])+","+str(score[1])+"\n")
 
-pre_processing()
-#
-# for i in range(5,30,5):
-#    main(i,15,8192)
+	graph_by_class("../results/"+result_file_name+".csv",window_size,epochs) # generating graphics
 
-main(3,30,8192)
+
+pre_processing()
+
+main(3,2,8192)
 # main(4,15,20)
