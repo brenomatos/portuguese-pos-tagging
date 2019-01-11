@@ -22,14 +22,18 @@ def main(window_size,epochs,batch_size)
 ```
 The results will be stored in the 'results' folder.
 
-# Results
+## Results
 For each model created, there will be 2 results files: one is named like 'x-y.csv', being 'x' the sliding window size, and
 'y' being the # of epochs. The other file is named like 'total_accuracy_x-y.txt',
 with 'x' and 'y' having the same meaning as in the previous file.
 
 The first file contains the accuracy of the model regarding every grammatical class considered. The second file contains the accuracy of the model as a whole, considering total hits/misses.
 
-# Built With
+### Graphs
+This code will also create graphs for each model created. The graph displays each class's accuracy like the example below:
+![Example Graph](/results/graphs/accuracy_by_class_3-1.png "Example Graph")
+
+## Built With
 - [Keras](https://keras.io/)
 - [Scikit-learn](https://scikit-learn.org/stable/)
 
