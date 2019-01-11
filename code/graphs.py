@@ -14,8 +14,11 @@ def read_data(file_path):
     # Create names on the y-axis
     plt.yticks(y_pos, classes)
 
+    # plt.xticks( np.arange( max(list(df['accuracy'])), step=0.05) )
+    plt.xlim(0.95,1)
+
     # Show graphic
     plt.show()
 
 
-read_data('../results/3-1.csv')
+read_data('../results/3-30.csv')

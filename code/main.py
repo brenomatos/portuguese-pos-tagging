@@ -130,9 +130,9 @@ def main(window_size,epochs,batch_size):
 			f.write(str(classes_list[index])+","+str(score[1])+"\n")
 
 pre_processing()
-
+#
 # for i in range(5,30,5):
 #    main(i,15,8192)
 
-main(3,1,8192)
+main(3,30,8192)
 # main(4,15,20)
