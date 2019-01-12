@@ -7,6 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_extraction.text import CountVectorizer
 from graphs import graph_by_class
+from graphs import graph_by_window_size
 import os
 
 def pre_processing(): #separates the words from its classes
@@ -94,6 +95,17 @@ def return_testing_data(vectorizer, window_size, corpus, text):
 	return data_test,classes_test,knownTestByClass,predictedTestByClass
 
 
+def create_model(window_size,data_train,classes_train,epochs,batch_size):
+	np.random.seed(7)
+	model = Sequential()
+	model.add(LSTM(50,input_shape=(window_size,26)))
+	model.add(Dense(25,activation='relu'))
+	model.add(Dense(2, activation='sigmoid'))
+	model.add(Dense(26, activation=lambda x: x))
+	model.compile(loss='binary_crossentropy',optimizer ='adam',metrics=['accuracy'])
+	model.fit(data_train,classes_train,epochs=epochs, batch_size=batch_size,validation_split=0.2,verbose=1)
+	return model
+
 def main(window_size,epochs,batch_size):
 	with open("classes.txt","r") as classes:
 		text = classes.read().split(' ')
@@ -102,15 +114,15 @@ def main(window_size,epochs,batch_size):
 	classes_train = []
 	data_train,classes_train,vectorizer,corpus = return_training_data(text, window_size, epochs)
 
-
-	np.random.seed(7)
-	model = Sequential()
-	model.add(LSTM(50,input_shape=(window_size,26)))
-	model.add(Dense(25,activation='relu'))
-	model.add(Dense(2, activation='sigmoid'))
-	model.add(Dense(26, activation=lambda x: x))
-	model.compile(loss='binary_crossentropy',optimizer ='adam',metrics=['accuracy'])
-	model.fit(data_train,classes_train,epochs=epochs, batch_size=batch_size,validation_split=0.2,verbose=1);
+	model = create_model(window_size,data_train,classes_train,epochs,batch_size)
+	# np.random.seed(7)
+	# model = Sequential()
+	# model.add(LSTM(50,input_shape=(window_size,26)))
+	# model.add(Dense(25,activation='relu'))
+	# model.add(Dense(2, activation='sigmoid'))
+	# model.add(Dense(26, activation=lambda x: x))
+	# model.compile(loss='binary_crossentropy',optimizer ='adam',metrics=['accuracy'])
+	# model.fit(data_train,classes_train,epochs=epochs, batch_size=batch_size,validation_split=0.2,verbose=1);
 
     #generating test samples
 	data_test = []
@@ -145,7 +157,5 @@ def main(window_size,epochs,batch_size):
 pre_processing()
 for i in range(3,6):
 	main(i,1,8192)
-
-#
-# main(3,1,8192)
-# main(6,1,8192)
+	
+graph_by_window_size("../results/total_accuracy.csv")

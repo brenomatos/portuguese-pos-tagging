@@ -33,6 +33,7 @@ def graph_by_class(file_path,window_size,epochs):
     plt.savefig('../results/graphs/accuracy_by_class_'+str(window_size)+"-"+str(epochs)+'.png')
     del keys
 
+# Creates one graph representing data stored in the "total_accuracy.csv" file.
 def graph_by_window_size(file_path):
     df = pd.read_csv(file_path)
     df = df[["window_size", "accuracy"]]
@@ -46,9 +47,7 @@ def graph_by_window_size(file_path):
 
     if not os.path.exists('../results/graphs'):
         os.makedirs('../results/graphs')
-
     plt.savefig('../results/graphs/total_accuracy.png')
-    plt.show()
 
 
 # graph_by_window_size("../results/total_accuracy.csv")
