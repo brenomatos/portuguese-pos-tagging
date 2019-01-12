@@ -32,7 +32,7 @@ window_size,epochs,accuracy
 5,1,0.9615463534328539
 ```
 
-The first file contains the accuracy of the model regarding every grammatical class considered. The second file contains the accuracy of the model as a whole, considering total hits/misses.
+The first file contains the accuracy of the model regarding every grammatical class considered. The second file contains the accuracy of the model as a whole, considering total hits/misses, for all models.
 
 ### Graphs
 This code will also create graphs for each model created, stored in the 'results/graphs/' folder. The first kind of graph displays each class's accuracy, for each model created, like the example below:
