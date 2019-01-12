@@ -32,6 +32,7 @@ def graph_by_class(file_path,window_size,epochs):
 
     plt.savefig('../results/graphs/accuracy_by_class_'+str(window_size)+"-"+str(epochs)+'.png')
     del keys
+    plt.close('all')
 
 # Creates one graph representing data stored in the "total_accuracy.csv" file.
 def graph_by_window_size(file_path):
@@ -43,12 +44,13 @@ def graph_by_window_size(file_path):
     plt.xlabel("Window Size")
     plt.ylabel("Accuracy")
     width = 1/3
-    plt.bar(list(total_accuracy.keys()), list(total_accuracy.values()), width)
+    plt.bar((list(total_accuracy.keys())), list(total_accuracy.values()), width, color='blue')
 
     if not os.path.exists('../results/graphs'):
         os.makedirs('../results/graphs')
-    plt.savefig('../results/graphs/total_accuracy.png')
 
+    plt.savefig('../results/graphs/total_accuracy.png')
+    plt.close('all')
 
 # graph_by_window_size("../results/total_accuracy.csv")
 # graph_by_class("../results/7-1.csv",3,1)
