@@ -143,6 +143,9 @@ def main(window_size,epochs,batch_size):
 
 
 pre_processing()
+for i in range(3,6):
+	main(i,1,8192)
 
-main(3,1,8192)
-main(4,1,8192)
+#
+# main(3,1,8192)
+# main(6,1,8192)
